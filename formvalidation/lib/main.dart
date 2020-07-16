@@ -2,12 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:formvalidation/src/blocs/provider.dart';
 import 'package:formvalidation/src/pages/home_page.dart';
 import 'package:formvalidation/src/pages/login_page.dart';
+import 'package:formvalidation/src/pages/producto_page.dart';
+import 'package:formvalidation/src/pages/registro_page.dart';
+import 'package:formvalidation/src/preferecias_usuario/preferencias_usuario.dart';
 
-void main() => runApp(MyApp());
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = new PreferenciasUsuario();
+  await prefs.initPrefs();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final prefs = new PreferenciasUsuario();
     return Provider(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -15,7 +24,9 @@ class MyApp extends StatelessWidget {
         initialRoute: 'login',
         routes: {
           'login': (BuildContext context) => LoginPage(),
-          'home': (BuildContext context) => HoemPage(),
+          'registro': (BuildContext context) => RegistroPage(),
+          'home': (BuildContext context) => HomePage(),
+          'producto': (BuildContext context) => ProductoPage(),
         },
         theme: ThemeData(
           primaryColor: Colors.deepPurple,

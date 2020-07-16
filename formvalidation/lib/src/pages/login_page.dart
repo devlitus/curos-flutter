@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:formvalidation/src/blocs/login_bloc.dart';
 import 'package:formvalidation/src/blocs/provider.dart';
+import 'package:formvalidation/src/providers/usuario_provider.dart';
+import 'package:formvalidation/src/utils/utils.dart' as util;
 
 class LoginPage extends StatelessWidget {
+  final usuarioProvider = new UsuarioProvider();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,7 +105,10 @@ class LoginPage extends StatelessWidget {
               ],
             ),
           ),
-          Text('¿Olvido la contraseña?'),
+          FlatButton(
+            onPressed: () => Navigator.pushReplacementNamed(context, 'registro'),
+            child: Text('Crear una nuieva cuenta'),
+          ),
           SizedBox(height: 100.0),
         ],
       ),
@@ -139,11 +145,10 @@ class LoginPage extends StatelessWidget {
             child: TextField(
               obscureText: true,
               decoration: InputDecoration(
-                icon: Icon(Icons.lock_outline, color: Colors.deepPurple),
-                labelText: 'Contraseña',
-                counterText: snapshot.data,
-                errorText: snapshot.error
-              ),
+                  icon: Icon(Icons.lock_outline, color: Colors.deepPurple),
+                  labelText: 'Contraseña',
+                  counterText: snapshot.data,
+                  errorText: snapshot.error),
               onChanged: (value) => bloc.changePassword(value),
             ),
           );
@@ -159,18 +164,23 @@ class LoginPage extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 60.0, vertical: 10.0),
             child: Text('Ingresar'),
           ),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
           elevation: 0.0,
           color: Colors.deepPurple,
           textColor: Colors.white,
           onPressed: snapshot.hasData ? () => _login(context, bloc) : null,
         );
-
       },
     );
-
   }
-  _login(BuildContext context, LoginBloc bloc) {
+
+  _login(BuildContext context, LoginBloc bloc) async{
+    Map info = await usuarioProvider.login(bloc.email, bloc.password);
+    if(info['ok']) {
     Navigator.pushReplacementNamed(context, 'home');
+    }else {
+      util.mostrarAlerta(context, info['mensaje']);
+    }
   }
 }
